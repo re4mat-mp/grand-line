@@ -1,0 +1,13 @@
+{
+  "name": "Grand Line",
+  "short_name": "Grand Line",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#081308",
+  "theme_color": "#081308",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

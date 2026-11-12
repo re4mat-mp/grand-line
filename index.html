@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Grand Line: a Game Boy-style RPG where every pixel is drawn by code</title>
+<meta name="description" content="A fan game built with Claude Code: walk a town, catch sea beasts in cages, beat two gyms. No ROM, no emulator, no downloaded assets. Plays in the browser, on a phone too.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://re4mat-mp.github.io/grand-line/">
+<meta property="og:title" content="Grand Line: a Game Boy-style RPG where every pixel is drawn by code">
+<meta property="og:description" content="A fan game built with Claude Code. No ROM, no emulator, no downloaded assets. Play it in the browser.">
+<meta property="og:image" content="https://re4mat-mp.github.io/grand-line/media/grand-line.png">
+<meta property="og:image:width" content="2560">
+<meta property="og:image:height" content="1280">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="play/icon-180.png">
+<style>
+  :root{--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    --ink:#15171C;--ink2:#3D424C;--ink3:#5F6672;--ground:#F1F2F4;--pale:#E7E9ED;--acc:#6A4CF5;--acc-l:#DCD4FF}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);-webkit-text-size-adjust:100%}
+  a{color:var(--ink);text-decoration-color:var(--acc);text-decoration-thickness:2px;text-underline-offset:3px}
+  .tone-acc{background-color:var(--acc-l);background-image:radial-gradient(rgba(21,23,28,.14) 1.2px,transparent 1.4px);background-size:6px 6px}
+  main{max-width:1140px;margin:0 auto;padding:40px 40px 24px}
+
+  /* the header: the same shape as the portfolio's front page */
+  .top{display:flex;gap:26px;align-items:center}
+  .badge{flex:0 0 auto;width:104px;height:104px;border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-4deg);line-height:1}
+  .badge .g{font-size:40px;font-weight:900;letter-spacing:-.02em}
+  .badge .k{font-size:11px;font-weight:800;letter-spacing:.07em;margin-top:6px}
+  .kick{font-size:15px;font-weight:700;color:var(--ink3);letter-spacing:.05em;margin-bottom:4px}
+  h1{margin:0;font-size:clamp(34px,5vw,56px);font-weight:900;line-height:1.05;letter-spacing:-.02em}
+  .lead{margin:8px 0 0;font-size:clamp(18px,2vw,22px);line-height:1.4;color:var(--ink2);max-width:46em}
+  .lead mark{background:linear-gradient(transparent 60%,var(--acc-l) 60%);color:var(--ink);font-weight:800}
+
+  /* the game's own frames: whole pixels, never smoothed */
+  .screen{display:block;border:2.5px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--ink);overflow:hidden;background:#000;line-height:0}
+  .screen img{display:block;width:100%;height:auto;aspect-ratio:4/3;image-rendering:pixelated;image-rendering:crisp-edges}
+  figure{margin:0}
+  figcaption{margin-top:14px;font-size:19px;line-height:1.35;color:var(--ink2)}
+  figcaption b{color:var(--ink);font-weight:850}
+  .n{display:inline-block;width:26px;height:26px;border:2.2px solid var(--ink);border-radius:13px;text-align:center;line-height:22px;
+    font-size:15px;font-weight:900;color:var(--ink);margin-right:8px;vertical-align:2px;background:#fff}
+
+  .playrow{display:grid;grid-template-columns:517px 1fr;gap:44px;align-items:start;margin-top:38px}
+  .go{padding-top:6px}
+  a.play{display:inline-flex;align-items:center;gap:14px;background:var(--acc);color:#fff;text-decoration:none;border:3px solid var(--ink);
+    border-radius:44px;box-shadow:6px 6px 0 var(--ink);padding:14px 40px 16px 32px;font-size:40px;font-weight:900;letter-spacing:-.01em;
+    -webkit-tap-highlight-color:transparent;transition:transform .12s,box-shadow .12s}
+  a.play:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+  a.play:active{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
+  a.play:focus-visible{outline:3px solid var(--acc);outline-offset:5px}
+  a.play svg{width:30px;height:30px;flex:0 0 auto}
+  .how{margin:18px 0 0;font-size:18px;color:var(--ink3);line-height:1.4}
+  .links{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+  .links a{border:2.5px solid var(--ink);border-radius:22px;box-shadow:3px 3px 0 var(--ink);padding:7px 16px;font-size:16px;font-weight:800;
+    text-decoration:none;background:#fff}
+  .links a:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;padding:0;list-style:none}
+  .facts li{border:2px solid var(--ink);border-radius:8px;padding:3px 10px;font-size:15px;font-weight:700;background:var(--pale)}
+
+  .beats{display:grid;grid-template-columns:repeat(2,517px);gap:44px;margin-top:40px}
+
+  .notes{max-width:760px;margin:44px 0 0;font-size:16px;line-height:1.55;color:var(--ink2)}
+  .notes p{margin:0 0 10px}
+  .fine{max-width:760px;margin:26px 0 0;padding-top:14px;border-top:2px solid var(--pale);font-size:13.5px;line-height:1.5;color:var(--ink3)}
+  footer{max-width:1140px;margin:0 auto;padding:6px 40px 48px;font-size:15px;color:var(--ink3)}
+
+  @media (max-width:1140px){
+    .playrow{grid-template-columns:1fr;gap:28px}
+    .playrow .screen{max-width:517px}
+    .beats{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+  }
+  @media (max-width:640px){
+    main{padding:24px 18px 16px}
+    .top{gap:16px}
+    .badge{width:72px;height:72px;border-radius:14px;box-shadow:4px 4px 0 var(--ink)}
+    .badge .g{font-size:27px}.badge .k{font-size:8.5px;margin-top:4px}
+    .kick{font-size:13px}
+    .playrow{margin-top:26px;gap:24px}
+    a.play{display:flex;justify-content:center;font-size:34px;padding:12px 24px 14px}
+    .how{font-size:17px}
+    figcaption{font-size:17px}
+    .beats{grid-template-columns:1fr;gap:24px;margin-top:30px}
+    footer{padding:6px 18px 40px}
+  }
+  @media (prefers-reduced-motion:reduce){a.play,.links a{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div class="badge tone-acc" aria-hidden="true"><span class="g">航海</span><span class="k">VOYAGE</span></div>
+    <div>
+      <div class="kick">re4mat-mp · grand-line</div>
+      <h1>Grand Line</h1>
+    </div>
+  </header>
+  <p class="lead">A Game Boy-style RPG where every pixel is <mark>drawn by code</mark>. A fan game I built with Claude Code:
+    walk a town, catch sea beasts in cages, beat two gyms. No ROM, no emulator, no downloaded assets.</p>
+
+  <section class="playrow" aria-label="Play">
+    <figure>
+      <a class="screen" href="play/" aria-label="Play Grand Line"><img src="media/town.png" width="256" height="192"
+        alt="Shells Town in the game: two red-roofed houses, a sandy path, tall grass, a river, and the player in a straw hat among the townspeople"></a>
+      <figcaption><span class="n">1</span><b>Walk the islands</b>, starting in Shells Town</figcaption>
+    </figure>
+    <div class="go">
+      <a class="play" href="play/"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M7 4 L26 15 L7 26 Z" fill="#fff" stroke="#15171C" stroke-width="2.5" stroke-linejoin="round"/></svg>Play</a>
+      <p class="how">In the browser, nothing to install. Arrows and Z on a keyboard, or the on-screen pad on a phone. It saves in your browser.</p>
+      <div class="links">
+        <a href="https://github.com/re4mat-mp/grand-line">The repo and how it was made →</a>
+        <a href="https://re4mat-mp.github.io/">← All the pieces</a>
+      </div>
+      <ul class="facts" aria-label="Facts">
+        <li>256×192 screen</li><li>a party of six</li><li>21 species</li><li>6 types</li><li>2 gyms, 2 badges</li><li>13 maps</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="beats" aria-label="What playing looks like">
+    <figure>
+      <div class="screen"><img src="media/catch.png" width="256" height="192" loading="lazy"
+        alt="A battle: the wild Sea Cat on its platform, the player's fighter in a straw hat, and the line: You threw a sea cage! Gotcha! Sea Cat was caught!"></div>
+      <figcaption><span class="n">2</span><b>Battle</b>, then catch with a sea cage</figcaption>
+    </figure>
+    <figure>
+      <div class="screen"><img src="media/evolve.png" width="256" height="192" loading="lazy"
+        alt="The evolution screen: the word What? above the Sea Cat turning into a Sea Lion, and the hint: B to stop it"></div>
+      <figcaption><span class="n">3</span><b>Evolve</b> what you caught</figcaption>
+    </figure>
+  </section>
+
+  <div class="notes">
+    <p>Tiles are 16×16 grids written as text, battle sprites are built from shaded shapes, and every object has its own
+      palette of four colours, the way a Game Boy Color does it. The pictures on this page are frames the game drew itself.</p>
+  </div>
+
+  <p class="fine">An unofficial, non-commercial fan game. One Piece and its characters belong to Eiichiro Oda / Shueisha / Toei Animation; this project is not affiliated with them. Every pixel here is drawn by code.</p>
+</main>
+<footer>Back to the portfolio: <a href="https://re4mat-mp.github.io/">re4mat-mp.github.io</a> · <a href="https://github.com/re4mat-mp">github.com/re4mat-mp</a></footer>
+</body>
+</html>
