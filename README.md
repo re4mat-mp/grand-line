@@ -62,6 +62,8 @@ What made it work was not the prompts, it was how each round was checked:
 - **Tests that guard the rules.** A smoke suite fails the build if the game file ever mentions the files that write
   XP, so "playing never moves work XP" is enforced, not promised.
 
+The render tool and the smoke suite live in my private copy; this repo ships the game.
+
 ## Mistakes included
 
 - **The off-screen renderer lies about animation.** In a hidden web view, `requestAnimationFrame` and timers are
